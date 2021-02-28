@@ -1,9 +1,92 @@
 describe('Party Horn Tests', () => {
   beforeEach(() => {
-    cy.visit('http://127.0.0.1:5500/');
+    cy.visit('http://127.0.0.1:5500/Part2-Cypress/index.html');
   });
 
   it('First Test', () => {
     expect(true).to.equal(true);
   });
+
+  it('Slider changes when volume input changes', () => {
+    cy.get('#volume-number').clear().type('75');
+    cy.get('#volume-slider').then($el =>{
+      expect($el).to.have.value(75); 
+    });
+  });
+
+
+  it('Volume changes when slider input changes', () => {
+    cy.get('#volume-slider').invoke('val', 33).trigger('input');
+    cy.get('#volume-number').then($el =>{
+      expect($el).to.have.value(33); 
+    });
+  });
+
+
+  it('Audio volume changes when value of slider changes', () => {
+    cy.get('#volume-slider').invoke('val', 33).trigger('input');
+    cy.get('#horn-sound').then(($el) => {
+      expect($el).to.have.prop('volume', 0.33);
+    });
+  });
+
+
+  it('Image and sound source changes when the party horn radio button is selected', () => {
+    cy.get('#radio-party-horn').click();
+    cy.get('#sound-image').then(($el) => {
+      expect($el).to.have.attr('src', './assets/media/images/party-horn.svg');
+    });
+    cy.get('#horn-sound').then(($el) => {
+      expect($el).to.have.attr('src', './assets/media/audio/party-horn.mp3');
+    });
+  });
+
+  it('Volume image changes when increasing volume to level 0', () => {
+    cy.get('#volume-slider').invoke('val', 0).trigger('input');
+    cy.get('#volume-image').then(($el) => {
+      expect($el).to.have.attr('src', './assets/media/icons/volume-level-0.svg');
+    });
+  });
+
+  it('Volume image changes when increasing volume to level 1', () => {
+    cy.get('#volume-slider').invoke('val', 1).trigger('input');
+    cy.get('#volume-image').then(($el) => {
+      expect($el).to.have.attr('src', './assets/media/icons/volume-level-1.svg');
+    });
+  });
+
+  it('Volume image changes when increasing volume to level 2', () => {
+    cy.get('#volume-slider').invoke('val', 34).trigger('input');
+    cy.get('#volume-image').then(($el) => {
+      expect($el).to.have.attr('src', './assets/media/icons/volume-level-2.svg');
+    });
+  });
+
+  it('Volume image changes when increasing volume to level 3', () => {
+    cy.get('#volume-slider').invoke('val', 67).trigger('input');
+    cy.get('#volume-image').then(($el) => {
+      expect($el).to.have.attr('src', './assets/media/icons/volume-level-3.svg');
+    });
+  });
+
+  it('Honk button is disabled when the textbox input is a empty or a non-number', () => {
+    cy.get('#volume-number').clear();
+    cy.get('#honk-btn').then(($el) => {
+      expect($el).to.have.attr('disabled');
+    });
+
+    cy.get('#volume-number').clear().type('hellor');
+    cy.get('#honk-btn').then(($el) => {
+      expect($el).to.have.attr('disabled');
+    });
+  });
+
+
+  it('Error shown when when the volume textbox input is out of range', () => {
+    cy.get('#volume-number').clear().type('111');
+    cy.get('#honk-btn').click();
+    cy.get('input:invalid').should('have.length', 1);
+  });
+
+
 });
